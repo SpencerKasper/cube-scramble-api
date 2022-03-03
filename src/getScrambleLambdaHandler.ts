@@ -1,7 +1,6 @@
-require('dotenv').config();
-const {Scramble} = require("./Scramble");
+import {Scramble} from './Scramble';
 
-exports.handler = async function (event: any) {
+export const handler = async (event: any) => {
     const SCRAMBLE_LENGTH = 20;
     try {
         const scramble = new Scramble(SCRAMBLE_LENGTH).toString();
