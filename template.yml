@@ -29,7 +29,7 @@ Resources:
     Type: AWS::ApiGateway::Resource
     Properties:
       ParentId:
-        Ref: CompetitionIdPathResource
+        Ref: CubeTypePathResource
       PathPart: '{cubeType}'
       RestApiId: !Ref CubeScrambleApi
   ApiGatewayModel:
@@ -120,7 +120,7 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
           StatusCode: 200
-      OperationName: 'Get Competitions'
+      OperationName: 'Get Scramble'
       ResourceId: !Ref GetScrambleResource
       RestApiId: !Ref CubeScrambleApi
   OptionsMethod:
@@ -159,4 +159,4 @@ Outputs:
     Value: !Sub "https://${CubeScrambleApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/"
   GetCompletedSubmissionsEndpoint:
     Description: "API Gateway endpoint URL for Prod stage for Get Scramble Function"
-    Value: !Sub "https://${CubeScrambleApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/{cubeType}/competitions"
+    Value: !Sub "https://${CubeScrambleApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/cubeType/{cubeType}"
