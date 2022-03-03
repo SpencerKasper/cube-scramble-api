@@ -25,7 +25,7 @@ Resources:
       ParentId: !GetAtt CubeScrambleApi.RootResourceId
       PathPart: 'cubeType'
       RestApiId: !Ref CubeScrambleApi
-  GetScramblePathResource:
+  GetScrambleResource:
     Type: AWS::ApiGateway::Resource
     Properties:
       ParentId:
