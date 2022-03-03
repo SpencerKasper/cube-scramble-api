@@ -5,10 +5,10 @@ Parameters:
     Default: arn:aws:iam::771384749710:role/lambda-with-s3-access-role
 Resources:
   GetScramble:
-    Type: AWS::Lambda::Function
+    Type: AWS::Serverless::Function
     Properties:
       FunctionName: GetScramble
-      Code: ./
+      CodeUri: ./built
       Handler: "getScrambleLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithS3AccessRoleArn

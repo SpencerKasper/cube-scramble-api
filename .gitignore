@@ -3,3 +3,4 @@ node_modules
 deploy/test-bitter-jester-data-transfer.zip
 .idea/**
 bitter-jester-data-manager-etl.zip
+built/**
