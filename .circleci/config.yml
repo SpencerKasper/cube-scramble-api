@@ -32,4 +32,6 @@ jobs:
 workflows:
   build-and-deploy:
     jobs:
-      - build-and-deploy
+      - build-and-deploy:
+          context:
+            - API_ENV_CONTEXT
