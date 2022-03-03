@@ -1,0 +1,162 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Parameters:
+  LambdaWithS3AccessRoleArn:
+    Type: String
+    Default: arn:aws:iam::771384749710:role/lambda-with-s3-access-role
+Resources:
+  GetScramble:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: GetScramble
+      Code: ./
+      Handler: "getScrambleLambdaHandler.handler"
+      Runtime: "nodejs12.x"
+      Role: !Ref LambdaWithS3AccessRoleArn
+      Timeout: 60
+  CubeScrambleApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      ApiKeySourceType: HEADER
+      Description: Scramble API for generating Rubik's Cube scrambles.
+      Name: cube-scramble-api
+  CubeTypePathResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt CubeScrambleApi.RootResourceId
+      PathPart: 'cubeType'
+      RestApiId: !Ref CubeScrambleApi
+  GetScramblePathResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: CompetitionIdPathResource
+      PathPart: '{cubeType}'
+      RestApiId: !Ref CubeScrambleApi
+  ApiGatewayModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      ContentType: 'application/json'
+      RestApiId: !Ref CubeScrambleApi
+      Schema: { }
+  ApiGatewayDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn: GetScrambleGatewayMethod
+    Properties:
+      Description: Cube Scramble API Deployment
+      RestApiId: !Ref CubeScrambleApi
+  ApiGatewayStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      DeploymentId: !Ref ApiGatewayDeployment
+      Description: Prod API Stage
+      RestApiId: !Ref CubeScrambleApi
+      StageName: prod
+  ApiGatewayIamRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: ''
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'apigateway.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+  ApiGatewayPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: "LambdaAccess"
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: 'Allow'
+            Action: 'lambda:*'
+            Resource: !GetAtt GetScramble.Arn
+      Roles:
+        - !Ref ApiGatewayIamRole
+  LambdaApiGatewayInvoke:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt "GetScramble.Arn"
+      Principal: "apigateway.amazonaws.com"
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
+  GetScrambleGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: true
+      AuthorizationType: NONE
+      HttpMethod: GET
+      RequestParameters:
+        method.request.path.cubeType: true
+      Integration:
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - ResponseTemplates: { "application/json": "" }
+            ResponseParameters:
+              method.response.header.X-Requested-With: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        RequestTemplates:
+          application/json: "{ \"cubeType\": \"$input.params('cubeType')\"}"
+        TimeoutInMillis: 29000
+        Type: AWS
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
+          - lambdaArn: !GetAtt "GetScramble.Arn"
+      MethodResponses:
+        - ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.X-Requested-With: false
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+          StatusCode: 200
+      OperationName: 'Get Competitions'
+      ResourceId: !Ref GetScrambleResource
+      RestApiId: !Ref CubeScrambleApi
+  OptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId:
+        Ref: CubeScrambleApi
+      ResourceId:
+        Ref: GetScrambleResource
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+Outputs:
+  MainEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Sub "https://${CubeScrambleApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/"
+  GetCompletedSubmissionsEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage for Get Scramble Function"
+    Value: !Sub "https://${CubeScrambleApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/{cubeType}/competitions"
