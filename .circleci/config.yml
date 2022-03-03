@@ -34,4 +34,4 @@ workflows:
     jobs:
       - build-and-deploy:
           context:
-            - API_ENV_CONTEXT
+            - AWS_CONTEXT
