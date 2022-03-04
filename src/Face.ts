@@ -39,7 +39,7 @@ export class Face {
         const randomAxisAsInt = RandomNumberGenerator.getRandomIntBetweenZeroAndNMinusOne(AXISES.length);
         const randomFaceForAxisAsInt = RandomNumberGenerator.getRandomIntBetweenZeroAndNMinusOne(2)
         const randomlySelectedFace = AXIS_FACE_MAP[AXISES[randomAxisAsInt] as Axis][randomFaceForAxisAsInt] as FaceValue;
-        if (previousTurn && previousTurn.getFace().getFaceValue() === randomlySelectedFace) {
+        if (previousTurn && (previousTurn.getFace().getFaceValue() === randomlySelectedFace || previousTurn.getFace().getAxis() === FACE_TO_AXIS_MAP[randomlySelectedFace])) {
             return this.generateRandomFaceValue(previousTurn);
         }
         return randomlySelectedFace;

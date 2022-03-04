@@ -1,6 +1,7 @@
 import {handler} from "./src/getScrambleLambdaHandler";
 
 handler({})
-    .then(() => {
+    .then((response) => {
+        console.error(response);
         console.error('Finished.');
     });
