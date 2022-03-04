@@ -24,7 +24,7 @@ export class Face {
 
     constructor({faceValue, previousTurn}: { faceValue?: FaceValue, previousTurn?: Turn }) {
         this.faceValue = faceValue ? faceValue : this.generateRandomFaceValue(previousTurn);
-        this.axis = FACE_TO_AXIS_MAP[faceValue] as Axis;
+        this.axis = FACE_TO_AXIS_MAP[this.faceValue] as Axis;
     }
 
     getFaceValue() {
