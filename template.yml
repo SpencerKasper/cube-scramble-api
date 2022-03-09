@@ -243,7 +243,7 @@ Resources:
             method.response.header.X-Requested-With: false
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
+            method.response.header.Access-Control-Allow-Origin: '*'
           StatusCode: 200
       OperationName: 'Save solve'
       ResourceId: !Ref SolvesResource
