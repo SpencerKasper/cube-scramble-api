@@ -222,7 +222,7 @@ Resources:
       AuthorizationType: NONE
       HttpMethod: POST
       RequestParameters:
-        method.request.header.body: true
+        method.request.body: true
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
