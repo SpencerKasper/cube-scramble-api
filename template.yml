@@ -55,12 +55,6 @@ Resources:
       ParentId: !GetAtt CubeScrambleApi.RootResourceId
       PathPart: 'solves'
       RestApiId: !Ref CubeScrambleApi
-  SolveResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId: !GetAtt CubeScrambleApi.RootResourceId
-      PathPart: 'solve'
-      RestApiId: !Ref CubeScrambleApi
   GetScrambleResource:
     Type: AWS::ApiGateway::Resource
     Properties:
@@ -216,7 +210,7 @@ Resources:
       OperationName: 'Get Solves'
       ResourceId: !Ref SolvesResource
       RestApiId: !Ref CubeScrambleApi
-  SaveSolveGatewayMethodV2:
+  SaveSolveGatewayMethodV7:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -252,7 +246,7 @@ Resources:
             method.response.header.Access-Control-Allow-Origin: '*'
           StatusCode: 200
       OperationName: 'Save solve'
-      ResourceId: !Ref SolveResource
+      ResourceId: !Ref SolvesResource
       RestApiId: !Ref CubeScrambleApi
 Outputs:
   MainEndpoint:
