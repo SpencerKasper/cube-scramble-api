@@ -236,7 +236,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{ \"body\": \"$util.escapeJavaScript($input.json('$'))\"}"
+          application/json: "{ \"body\": $util.escapeJavaScript($input.json('$'))}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
@@ -246,9 +246,9 @@ Resources:
         - ResponseModels:
             application/json: 'Empty'
           ResponseParameters:
-            method.response.header.X-Requested-With: false
-            method.response.header.Access-Control-Allow-Headers: false
-            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.X-Requested-With: "'*'"
+            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+            method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
             method.response.header.Access-Control-Allow-Origin: '*'
           StatusCode: 200
       OperationName: 'Save solve'
