@@ -3,12 +3,15 @@ Parameters:
   LambdaWithS3AccessRoleArn:
     Type: String
     Default: arn:aws:iam::771384749710:role/lambda-with-s3-access-role
+  CurrentNodeModulesLayerArn:
+    Type: String
 Resources:
   GetScramble:
     Type: AWS::Lambda::Function
     Properties:
       FunctionName: GetScramble
       Code: ./built
+      Layers: [ !Join [ ":", [ "", !Ref CurrentNodeModulesLayerVersion ] ] ]
       Handler: "getScrambleLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithS3AccessRoleArn
@@ -18,6 +21,7 @@ Resources:
     Properties:
       FunctionName: GetSolves
       Code: ./built
+      Layers: [ !Join [ ":", [ "", !Ref CurrentNodeModulesLayerVersion ] ] ]
       Handler: "getSolvesLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithS3AccessRoleArn
@@ -27,6 +31,7 @@ Resources:
     Properties:
       FunctionName: SaveSolve
       Code: ./built
+      Layers: [ !Join [ ":", [ "", !Ref CurrentNodeModulesLayerVersion ] ] ]
       Handler: "saveSolveLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithS3AccessRoleArn
@@ -171,6 +176,8 @@ Resources:
     Properties:
       AuthorizationType: NONE
       HttpMethod: GET
+      RequestParameters:
+        method.request.querystring.userId: true
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -208,7 +215,6 @@ Resources:
       AuthorizationType: NONE
       HttpMethod: POST
       RequestParameters:
-        method.request.path.cubeType: true
         method.request.header.body: true
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
