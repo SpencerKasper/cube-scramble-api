@@ -55,6 +55,12 @@ Resources:
       ParentId: !GetAtt CubeScrambleApi.RootResourceId
       PathPart: 'solves'
       RestApiId: !Ref CubeScrambleApi
+  SolveResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !GetAtt CubeScrambleApi.RootResourceId
+      PathPart: 'solve'
+      RestApiId: !Ref CubeScrambleApi
   GetScrambleResource:
     Type: AWS::ApiGateway::Resource
     Properties:
@@ -167,7 +173,7 @@ Resources:
             method.response.header.X-Requested-With: false
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
+            method.response.header.Access-Control-Allow-Origin: '*'
           StatusCode: 200
       OperationName: 'Get Scramble'
       ResourceId: !Ref GetScrambleResource
@@ -205,7 +211,7 @@ Resources:
             method.response.header.X-Requested-With: false
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
+            method.response.header.Access-Control-Allow-Origin: '*'
           StatusCode: 200
       OperationName: 'Get Solves'
       ResourceId: !Ref SolvesResource
@@ -246,7 +252,7 @@ Resources:
             method.response.header.Access-Control-Allow-Origin: '*'
           StatusCode: 200
       OperationName: 'Save solve'
-      ResourceId: !Ref SolvesResource
+      ResourceId: !Ref SolveResource
       RestApiId: !Ref CubeScrambleApi
   OptionsMethod:
     Type: AWS::ApiGateway::Method
@@ -277,7 +283,7 @@ Resources:
           ResponseParameters:
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
+            method.response.header.Access-Control-Allow-Origin: '*'
 Outputs:
   MainEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"
