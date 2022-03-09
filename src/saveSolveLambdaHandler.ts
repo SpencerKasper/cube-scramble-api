@@ -7,7 +7,11 @@ export const handler = async (event: any) => {
         const dynamoDbClient = new DynamoDbClient('solve_log_solves');
         const userIdSolve = {solve: body.solve};
         await dynamoDbClient.writeMany([SolveLogSolvesSchema.toSchema(userIdSolve)])
-        return {responseCode: 200, body: userIdSolve};
+        return {responseCode: 200, body: userIdSolve, headers: {
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            }};
     } catch (e) {
         return e;
     }
