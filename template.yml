@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
-  LambdaWithS3AccessRoleArn:
+  LambdaWithDynamoDBFullAccessRoleArn:
     Type: String
-    Default: arn:aws:iam::771384749710:role/lambda-with-s3-access-role
+    Default: arn:aws:iam::771384749710:role/LambdaWithDynamoDBFullAccess
   CurrentNodeModulesLayerVersion:
     Type: String
     Default: arn:aws:lambda:us-east-1:771384749710:layer:cube-scramble-api-layer:1
@@ -15,7 +15,7 @@ Resources:
       Layers: [!Ref CurrentNodeModulesLayerVersion]
       Handler: "getScrambleLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !Ref LambdaWithS3AccessRoleArn
+      Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
   GetSolves:
     Type: AWS::Lambda::Function
@@ -25,7 +25,7 @@ Resources:
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "getSolvesLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !Ref LambdaWithS3AccessRoleArn
+      Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
   SaveSolve:
     Type: AWS::Lambda::Function
@@ -35,7 +35,7 @@ Resources:
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "saveSolveLambdaHandler.handler"
       Runtime: "nodejs12.x"
-      Role: !Ref LambdaWithS3AccessRoleArn
+      Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
   CubeScrambleApi:
     Type: AWS::ApiGateway::RestApi
