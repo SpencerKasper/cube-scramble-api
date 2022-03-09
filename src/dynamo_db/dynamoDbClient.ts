@@ -8,7 +8,7 @@ interface ReadManyArgs {
 
 export class DynamoDbClient {
     tableName;
-    client;
+    client: typeof DynamoDB;
 
     constructor(tableName: string) {
         this.client = new DynamoDB({region: "us-east-1"});

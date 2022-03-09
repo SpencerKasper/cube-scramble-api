@@ -11,6 +11,7 @@
     },
     "dependencies": {
         "@aws-sdk/client-dynamodb": "3.53.0",
+        "@aws-sdk/types": "^3.53.0",
         "@types/aws-lambda": "^8.10.93",
         "@types/aws-sdk": "2.7.0",
         "@types/node": "^13.7.4",
