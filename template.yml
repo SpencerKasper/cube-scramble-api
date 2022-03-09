@@ -3,8 +3,9 @@ Parameters:
   LambdaWithS3AccessRoleArn:
     Type: String
     Default: arn:aws:iam::771384749710:role/lambda-with-s3-access-role
-  CurrentNodeModulesLayerArn:
+  CurrentNodeModulesLayerVersion:
     Type: String
+    Default: arn:aws:lambda:us-east-1:771384749710:layer:cube-scramble-api-layer:1
 Resources:
   GetScramble:
     Type: AWS::Lambda::Function
