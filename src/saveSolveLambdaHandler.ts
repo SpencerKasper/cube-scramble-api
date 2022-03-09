@@ -3,6 +3,7 @@ import {SolveLogSolvesSchema} from "./dynamo_db/schemas/solveLogSolvesSchema";
 
 export const handler = async (event: any) => {
     try {
+        console.error(event);
         const body = JSON.parse(event.body);
         const dynamoDbClient = new DynamoDbClient('solve_log_solves');
         const userIdSolve = {solve: body.solve};
