@@ -1,4 +1,4 @@
-import {Scramble} from './Scramble';
+import {Scramble} from './scramble/Scramble';
 
 export const handler = async (event: any) => {
     const SCRAMBLE_LENGTH = 20;
