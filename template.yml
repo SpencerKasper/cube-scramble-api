@@ -178,7 +178,7 @@ Resources:
       AuthorizationType: NONE
       HttpMethod: GET
       RequestParameters:
-        method.request.querystring.userId: true
+        method.request.querystring.userId: false
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -192,7 +192,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{}"
+          application/json: "{\"userId\": \"$input.params('userId')\"}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
