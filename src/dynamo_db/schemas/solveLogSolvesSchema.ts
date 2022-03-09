@@ -1,13 +1,12 @@
 import {v4 as uuidv4} from 'uuid';
 
-interface SolveResponseSchema { userId: string; solve: { scramble: string; time: number; solveId: string; cubeType: string; number: number }; }
+interface SolveResponseSchema { solve: { userId: string; scramble: string; time: number; solveId: string; cubeType: string; number: number }; }
 export class SolveLogSolvesSchema {
     static toSchema({
-                        userId,
                         solve
                     }: SolveResponseSchema) {
         return {
-            userId: {S: userId},
+            userId: {S: solve.userId},
             solveId: {S: solve.solveId ? solve.solveId : uuidv4()},
             scramble: {S: solve.scramble},
             time: {N: solve.time.toString()},
