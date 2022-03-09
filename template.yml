@@ -12,7 +12,7 @@ Resources:
     Properties:
       FunctionName: GetScramble
       Code: ./built
-      Layers: [ !Join [ ":", [ "arn:aws:lambda:us-east-1:771384749710:layer:cube-scramble-api-layer", !Ref CurrentNodeModulesLayerVersion ] ] ]
+      Layers: [!Ref CurrentNodeModulesLayerVersion]
       Handler: "getScrambleLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithS3AccessRoleArn
@@ -22,7 +22,7 @@ Resources:
     Properties:
       FunctionName: GetSolves
       Code: ./built
-      Layers: [ !Join [ ":", [ "arn:aws:lambda:us-east-1:771384749710:layer:cube-scramble-api-layer", !Ref CurrentNodeModulesLayerVersion ] ] ]
+      Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "getSolvesLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithS3AccessRoleArn
@@ -32,7 +32,7 @@ Resources:
     Properties:
       FunctionName: SaveSolve
       Code: ./built
-      Layers: [ !Join [ ":", [ "arn:aws:lambda:us-east-1:771384749710:layer:cube-scramble-api-layer", !Ref CurrentNodeModulesLayerVersion ] ] ]
+      Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "saveSolveLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithS3AccessRoleArn
