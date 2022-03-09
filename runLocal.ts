@@ -1,9 +1,9 @@
-// import {handler} from "./src/getSolvesLambdaHandler";
-//
-// handler({userId: 'spencer.kasper@gmail.com'})
-//     .then(response => {
-//         console.error(response);
-//     })
+import {handler} from "./src/getSolvesLambdaHandler";
+
+handler({userId: 'spencer.kasper@gmail.com'})
+    .then(response => {
+        console.error(response);
+    })
 
 
 

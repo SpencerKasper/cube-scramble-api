@@ -7,10 +7,12 @@ export const handler = async (event: any) => {
         const dynamoDbClient = new DynamoDbClient('solve_log_solves');
         console.error(userId);
         const whereClause = userId ? ` WHERE "userId" = '${userId}'` : '';
-        const result = await dynamoDbClient.queryTable(`SELECT * FROM "solve_log_solves"${whereClause}`);
-        console.error(result)
-        const solves = SolveLogSolvesSchema.fromSchema(result.Items);
-        return {responseCode: 200, body: {solves}};
+        return dynamoDbClient.queryTable(`SELECT * FROM "solve_log_solves"${whereClause}`)
+            .then(result => {
+                console.error(result)
+                const solves = SolveLogSolvesSchema.fromSchema(result.Items);
+                return {responseCode: 200, body: {solves}};
+            });
     } catch (e) {
         return e;
     }
