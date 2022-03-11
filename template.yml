@@ -12,7 +12,7 @@ Resources:
     Properties:
       FunctionName: GetScramble
       Code: ./built
-      Layers: [!Ref CurrentNodeModulesLayerVersion]
+      Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "getScrambleLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
@@ -175,6 +175,7 @@ Resources:
       HttpMethod: GET
       RequestParameters:
         method.request.path.cubeType: true
+        method.request.querystring.scrambleLength: false
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -188,7 +189,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{ \"cubeType\": \"$input.params('cubeType')\"}"
+          application/json: "{ \"cubeType\": \"$input.params('cubeType')\", \"scrambleLength\": \"$input.params('scrambleLength')\"}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
