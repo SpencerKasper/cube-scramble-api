@@ -210,7 +210,7 @@ Resources:
       OperationName: 'Get Solves'
       ResourceId: !Ref SolvesResource
       RestApiId: !Ref CubeScrambleApi
-  SaveSolveGatewayMethodV7:
+  SaveSolveGatewayMethodV8:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -240,15 +240,15 @@ Resources:
         - ResponseModels:
             application/json: 'Empty'
           ResponseParameters:
-            method.response.header.X-Requested-With: "'*'"
-            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-            method.response.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
-            method.response.header.Access-Control-Allow-Origin: '*'
+            method.response.header.X-Requested-With: false
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
           StatusCode: 200
       OperationName: 'Save solve'
       ResourceId: !Ref SolvesResource
       RestApiId: !Ref CubeScrambleApi
-  SaveSolveGatewayOptionsMethod:
+  SolvesResourceOptionsMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -275,9 +275,9 @@ Resources:
           ResponseModels:
             application/json: 'Empty'
           ResponseParameters:
-            method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-            method.response.header.Access-Control-Allow-Methods: "'GET,POST,OPTIONS'"
-            method.response.header.Access-Control-Allow-Origin: "'*'"
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
 Outputs:
   MainEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"
