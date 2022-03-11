@@ -3,7 +3,7 @@ import {SolveLogSolvesSchema} from "./dynamo_db/schemas/solveLogSolvesSchema";
 
 export const handler = async (event: any) => {
     try {
-        const userId = event.userId;
+        const userId = decodeURIComponent(event.userId);
         const dynamoDbClient = new DynamoDbClient('solve_log_solves');
         const whereClause = userId ? ` WHERE "userId" = '${userId}'` : '';
         const result = await dynamoDbClient.queryTable(`SELECT * FROM "solve_log_solves"${whereClause}`);

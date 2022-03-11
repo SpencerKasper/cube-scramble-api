@@ -3,8 +3,8 @@ import {SolveLogSolvesSchema} from "./dynamo_db/schemas/solveLogSolvesSchema";
 
 export const handler = async (event: any) => {
     try {
-        const userId = event.userId;
-        const solveId = event.solveId;
+        const userId = decodeURIComponent(event.userId);
+        const solveId = decodeURIComponent(event.solveId);
         if (!userId || !solveId) {
             return {responseCode: 400, body: {message: 'You must pass both "userId" and "solveId" to delete a solve.'}}
         }
