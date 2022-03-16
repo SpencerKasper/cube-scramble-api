@@ -1,3 +1,5 @@
+import {TransactWriteItemsCommandInput} from "@aws-sdk/client-dynamodb";
+
 const {DynamoDB} = require("@aws-sdk/client-dynamodb");
 
 interface ReadManyArgs {
@@ -54,5 +56,12 @@ export class DynamoDbClient {
             }
         };
         await this.client.batchWriteItem(params);
+    }
+
+    async updateMany(params: TransactWriteItemsCommandInput) {
+        return this.client.transactWriteItems(params, function(err, data) {
+            if (err) console.log(err, err.stack); // an error occurred
+            else     console.log(data);           // successful response
+        });
     }
 }
