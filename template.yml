@@ -91,11 +91,11 @@ Resources:
       RestApiId: !Ref CubeScrambleApi
   PlusTwoResource:
     Type: AWS::ApiGateway::Resource
-      Properties:
-        ParentId:
-          Ref: DeleteSolveResource
-        PathPart: 'plusTwo'
-        RestApiId: !Ref CubeScrambleApi
+    Properties:
+      ParentId:
+        Ref: DeleteSolveResource
+      PathPart: 'plusTwo'
+      RestApiId: !Ref CubeScrambleApi
   GetScrambleResource:
     Type: AWS::ApiGateway::Resource
     Properties:
