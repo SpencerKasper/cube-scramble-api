@@ -43,7 +43,7 @@ export const handler = async (event) => {
                       },
                       ExpressionAttributeValues: {
                           ":p": {
-                              BOOL: true
+                              BOOL: plusOrMinusTwo === '+'
                           }
                       },
                       Key: {
