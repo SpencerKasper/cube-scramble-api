@@ -32,7 +32,7 @@ export const handler = async (event) => {
               },
           ],
       };
-      await dynamoDbClient.updateMany(params);
+      const transactWriteItemsCommandOutput = await dynamoDbClient.updateMany(params);
       return getSolvesLambdaHandler.handler(event);
   }  catch (e) {
       return e;

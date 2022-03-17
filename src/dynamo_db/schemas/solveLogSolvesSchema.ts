@@ -1,6 +1,6 @@
 import {v4 as uuidv4} from 'uuid';
-
-interface SolveResponseSchema { solve: { userId: string; scramble: string; time: number; solveId: string; cubeType: string; number: number }; }
+interface Solve { userId: string; scramble: string; time: number; solveId: string; cubeType: string; number: number }
+interface SolveResponseSchema { solve: Solve; }
 export class SolveLogSolvesSchema {
     static toSchema({
                         solve
@@ -15,7 +15,7 @@ export class SolveLogSolvesSchema {
         };
     }
 
-    static fromSchema(dynamoDbResponse): SolveResponseSchema {
+    static fromSchema(dynamoDbResponse): Solve[] {
         return dynamoDbResponse.map(response => ({
             solveId: response.solveId.S,
             userId: response.userId.S,
