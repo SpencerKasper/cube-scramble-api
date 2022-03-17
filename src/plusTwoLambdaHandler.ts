@@ -11,7 +11,7 @@ export const handler = async (event) => {
               {
                   Update: {
                       ExpressionAttributeNames: {
-                          "#TIME": "time"
+                          "#TIME": "time",
                       },
                       ExpressionAttributeValues: {
                           ":t": {
@@ -32,7 +32,34 @@ export const handler = async (event) => {
               },
           ],
       };
-      const transactWriteItemsCommandOutput = await dynamoDbClient.updateMany(params);
+      await dynamoDbClient.updateMany(params);
+      const paramsPlusTwoUpdate = {
+          TransactItems: [
+              {
+                  Update: {
+                      ExpressionAttributeNames: {
+                          "#PLUSTWO": "plusTwo"
+                      },
+                      ExpressionAttributeValues: {
+                          ":p": {
+                              BOOL: true
+                          }
+                      },
+                      Key: {
+                          'solveId': {
+                              S: event.solveId,
+                          },
+                          'userId': {
+                              S: userId,
+                          }
+                      },
+                      TableName: 'solve_log_solves',
+                      UpdateExpression: 'SET #PLUSTWO = :p',
+                  }
+              },
+          ],
+      };
+      await dynamoDbClient.updateMany(paramsPlusTwoUpdate);
       return getSolvesLambdaHandler.handler(event);
   }  catch (e) {
       return e;

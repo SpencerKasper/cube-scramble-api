@@ -55,7 +55,7 @@ export class DynamoDbClient {
                 [this.tableName]: putRequests
             }
         };
-        await this.client.batchWriteItem(params);
+        return this.client.batchWriteItem(params);
     }
 
     async updateMany(params: TransactWriteItemsCommandInput) {
