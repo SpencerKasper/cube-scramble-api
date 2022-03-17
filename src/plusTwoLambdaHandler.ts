@@ -5,6 +5,7 @@ import * as getSolvesLambdaHandler from './getSolvesLambdaHandler';
 export const handler = async (event) => {
   try {
       const userId = decodeURIComponent(event.userId);
+      const plusOrMinusTwo = event.plusOrMinusTwo ? event.plusOrMinusTwo : '+'
       const dynamoDbClient = new DynamoDbClient('solve_log_solves');
       const params = {
           TransactItems: [
@@ -16,7 +17,7 @@ export const handler = async (event) => {
                       ExpressionAttributeValues: {
                           ":t": {
                               N: "2000"
-                          }
+                          },
                       },
                       Key: {
                           'solveId': {
@@ -27,7 +28,7 @@ export const handler = async (event) => {
                           }
                       },
                       TableName: 'solve_log_solves',
-                      UpdateExpression: 'SET #TIME = #TIME + :t',
+                      UpdateExpression: `SET #TIME = #TIME ${plusOrMinusTwo} :t`,
                   }
               },
           ],

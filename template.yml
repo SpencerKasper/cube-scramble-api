@@ -417,6 +417,7 @@ Resources:
       RequestParameters:
         method.request.path.solveId: true
         method.request.path.userId: true
+        method.request.querystring.plusOrMinusTwo: false
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -430,7 +431,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\"}"
+          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"plusOrMinusTwo\": \"$input.params('plusOrMinusTwo')\"}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
