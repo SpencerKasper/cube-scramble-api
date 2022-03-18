@@ -57,6 +57,16 @@ Resources:
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
+  DNF:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: DNF
+      Code: ./built
+      Layers: [ !Ref CurrentNodeModulesLayerVersion ]
+      Handler: "dnfLambdaHandler.handler"
+      Runtime: "nodejs12.x"
+      Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
+      Timeout: 60
   CubeScrambleApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
@@ -95,6 +105,13 @@ Resources:
       ParentId:
         Ref: DeleteSolveResource
       PathPart: 'plusTwo'
+      RestApiId: !Ref CubeScrambleApi
+  DNFResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId:
+        Ref: DeleteSolveResource
+      PathPart: 'dnf'
       RestApiId: !Ref CubeScrambleApi
   GetScrambleResource:
     Type: AWS::ApiGateway::Resource
@@ -158,6 +175,9 @@ Resources:
           - Effect: 'Allow'
             Action: 'lambda:*'
             Resource: !GetAtt PlusTwo.Arn
+          - Effect: 'Allow'
+            Action: 'lambda:*'
+            Resource: !GetAtt DNF.Arn
       Roles:
         - !Ref ApiGatewayIamRole
   LambdaApiGatewayInvoke:
@@ -193,6 +213,13 @@ Resources:
     Properties:
       Action: "lambda:InvokeFunction"
       FunctionName: !GetAtt "PlusTwo.Arn"
+      Principal: "apigateway.amazonaws.com"
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
+  LambdaApiGatewayInvokeDNF:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt "DNF.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
   GetScrambleGatewayMethod:
@@ -448,6 +475,46 @@ Resources:
           StatusCode: 200
       OperationName: 'PlusTwo'
       ResourceId: !Ref PlusTwoResource
+      RestApiId: !Ref CubeScrambleApi
+  DNFGatewayMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      HttpMethod: GET
+      RequestParameters:
+        method.request.path.solveId: true
+        method.request.path.userId: true
+        method.request.querystring.isDnf: false
+      Integration:
+        Credentials: !GetAtt ApiGatewayIamRole.Arn
+        IntegrationHttpMethod: POST
+        IntegrationResponses:
+          - ResponseTemplates: { "application/json": "" }
+            ResponseParameters:
+              method.response.header.X-Requested-With: "'*'"
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            StatusCode: 200
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        RequestTemplates:
+          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"isDnf\": \"$input.params('isDnf')\"}"
+        TimeoutInMillis: 29000
+        Type: AWS
+        Uri: !Sub
+          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
+          - lambdaArn: !GetAtt "DNF.Arn"
+      MethodResponses:
+        - ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.X-Requested-With: false
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+          StatusCode: 200
+      OperationName: 'DNF'
+      ResourceId: !Ref DNFResource
       RestApiId: !Ref CubeScrambleApi
 Outputs:
   MainEndpoint:
