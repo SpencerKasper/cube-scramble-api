@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
-interface Solve { userId: string; scramble: string; time: number; solveId: string; cubeType: string; number: number; plusTwo: boolean; }
+interface Solve { userId: string; scramble: string; time: number; solveId: string; cubeType: string; number: number; plusTwo: boolean; dnf: boolean;}
 interface SolveResponseSchema { solve: Solve; }
 export class SolveLogSolvesSchema {
     static toSchema({
@@ -13,6 +13,7 @@ export class SolveLogSolvesSchema {
             cubeType: {S: solve.cubeType},
             number: {N: solve.number.toString()},
             plusTwo: {BOOL: solve.plusTwo ? solve.plusTwo : false},
+            dnf: {BOOL: solve.dnf ? solve.dnf : false},
         };
     }
 
@@ -25,6 +26,7 @@ export class SolveLogSolvesSchema {
             cubeType: response.cubeType.S,
             number: Number(response.number.N),
             plusTwo: response.plusTwo ? response.plusTwo.BOOL : false,
+            dnf: response.dnf ? response.dnf.BOOL : false,
         }));
     }
 }

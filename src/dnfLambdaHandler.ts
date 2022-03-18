@@ -5,7 +5,7 @@ import * as getSolvesLambdaHandler from './getSolvesLambdaHandler';
 export const handler = async (event) => {
   try {
       const userId = decodeURIComponent(event.userId);
-      const isDnf = event.isDnf ? event.isDnf : true;
+      const isDnf = event.isDnf ? Boolean(event.isDnf) : true;
       const dynamoDbClient = new DynamoDbClient('solve_log_solves');
       const params = {
           TransactItems: [

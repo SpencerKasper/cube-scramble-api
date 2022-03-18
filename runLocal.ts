@@ -1,5 +1,5 @@
 // import {handler} from "./src/getSolvesLambdaHandler";
-import {handler} from './src/plusTwoLambdaHandler';
+import {handler} from './src/dnfLambdaHandler';
 
 handler({userId: 'spencer.kasper@gmail.com', solveId: '6d7b18b1-a5e8-4a5b-9b08-0a4c068b28a2'})
     .then(response => {
