@@ -7,137 +7,56 @@ Parameters:
     Type: String
     Default: arn:aws:lambda:us-east-1:771384749710:layer:cube-scramble-api-layer:1
 Resources:
-  GetScramble:
+  GetSessions:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: GetScramble
+      FunctionName: GetSessions
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
-      Handler: "getScrambleLambdaHandler.handler"
+      Handler: "getSessionLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
-  GetSolves:
+  CreateSession:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: GetSolves
+      FunctionName: CreateSession
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
-      Handler: "getSolvesLambdaHandler.handler"
+      Handler: "createSessionLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
-  SaveSolve:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: SaveSolve
-      Code: ./built
-      Layers: [ !Ref CurrentNodeModulesLayerVersion ]
-      Handler: "saveSolveLambdaHandler.handler"
-      Runtime: "nodejs12.x"
-      Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
-      Timeout: 60
-  DeleteSolve:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: DeleteSolve
-      Code: ./built
-      Layers: [ !Ref CurrentNodeModulesLayerVersion ]
-      Handler: "deleteSolveLambdaHandler.handler"
-      Runtime: "nodejs12.x"
-      Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
-      Timeout: 60
-  PlusTwo:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: PlusTwo
-      Code: ./built
-      Layers: [ !Ref CurrentNodeModulesLayerVersion ]
-      Handler: "plusTwoLambdaHandler.handler"
-      Runtime: "nodejs12.x"
-      Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
-      Timeout: 60
-  DNF:
-    Type: AWS::Lambda::Function
-    Properties:
-      FunctionName: DNF
-      Code: ./built
-      Layers: [ !Ref CurrentNodeModulesLayerVersion ]
-      Handler: "dnfLambdaHandler.handler"
-      Runtime: "nodejs12.x"
-      Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
-      Timeout: 60
-  CubeScrambleApi:
+  SolveLogSessionApi:
     Type: AWS::ApiGateway::RestApi
     Properties:
       ApiKeySourceType: HEADER
-      Description: Scramble API for generating Rubik's Cube scrambles.
-      Name: cube-scramble-api
-  CubeTypePathResource:
+      Description: Session API for saving Rubik's Cube solves.
+      Name: solve-log-session-api
+  SessionsResource:
     Type: AWS::ApiGateway::Resource
     Properties:
-      ParentId: !GetAtt CubeScrambleApi.RootResourceId
-      PathPart: 'cubeType'
-      RestApiId: !Ref CubeScrambleApi
-  SolvesResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId: !GetAtt CubeScrambleApi.RootResourceId
-      PathPart: 'solves'
-      RestApiId: !Ref CubeScrambleApi
-  SolveIdResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Ref: SolvesResource
-      PathPart: '{solveId}'
-      RestApiId: !Ref CubeScrambleApi
-  DeleteSolveResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Ref: SolveIdResource
-      PathPart: '{userId}'
-      RestApiId: !Ref CubeScrambleApi
-  PlusTwoResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Ref: DeleteSolveResource
-      PathPart: 'plusTwo'
-      RestApiId: !Ref CubeScrambleApi
-  DNFResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Ref: DeleteSolveResource
-      PathPart: 'dnf'
-      RestApiId: !Ref CubeScrambleApi
-  GetScrambleResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Ref: CubeTypePathResource
-      PathPart: '{cubeType}'
-      RestApiId: !Ref CubeScrambleApi
+      ParentId: !GetAtt SolveLogSessionApi.RootResourceId
+      PathPart: 'sessions'
+      RestApiId: !Ref SolveLogSessionApi
   ApiGatewayModel:
     Type: AWS::ApiGateway::Model
     Properties:
       ContentType: 'application/json'
-      RestApiId: !Ref CubeScrambleApi
+      RestApiId: !Ref SolveLogSessionApi
       Schema: { }
   ApiGatewayDeployment:
     Type: AWS::ApiGateway::Deployment
-    DependsOn: GetScrambleGatewayMethod
+    DependsOn: GetSessionsGatewayMethod
     Properties:
       Description: Cube Scramble API Deployment
-      RestApiId: !Ref CubeScrambleApi
+      RestApiId: !Ref SolveLogSessionApi
   ApiGatewayStage:
     Type: AWS::ApiGateway::Stage
     Properties:
       DeploymentId: !Ref ApiGatewayDeployment
       Description: Prod API Stage
-      RestApiId: !Ref CubeScrambleApi
+      RestApiId: !Ref SolveLogSessionApi
       StageName: prod
   ApiGatewayIamRole:
     Type: AWS::IAM::Role
@@ -162,112 +81,33 @@ Resources:
         Statement:
           - Effect: 'Allow'
             Action: 'lambda:*'
-            Resource: !GetAtt GetScramble.Arn
+            Resource: !GetAtt GetSessions.Arn
           - Effect: 'Allow'
             Action: 'lambda:*'
-            Resource: !GetAtt GetSolves.Arn
-          - Effect: 'Allow'
-            Action: 'lambda:*'
-            Resource: !GetAtt SaveSolve.Arn
-          - Effect: 'Allow'
-            Action: 'lambda:*'
-            Resource: !GetAtt DeleteSolve.Arn
-          - Effect: 'Allow'
-            Action: 'lambda:*'
-            Resource: !GetAtt PlusTwo.Arn
-          - Effect: 'Allow'
-            Action: 'lambda:*'
-            Resource: !GetAtt DNF.Arn
+            Resource: !GetAtt CreateSession.Arn
       Roles:
         - !Ref ApiGatewayIamRole
   LambdaApiGatewayInvoke:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "GetScramble.Arn"
+      FunctionName: !GetAtt "GetSessions.Arn"
       Principal: "apigateway.amazonaws.com"
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokeGetSolves:
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SolveLogSessionApi}/*/*
+  LambdaApiGatewayInvokeCreateSession:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "GetSolves.Arn"
+      FunctionName: !GetAtt "CreateSession.Arn"
       Principal: "apigateway.amazonaws.com"
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokeSaveSolve:
-    Type: "AWS::Lambda::Permission"
-    Properties:
-      Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "SaveSolve.Arn"
-      Principal: "apigateway.amazonaws.com"
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokeDeleteSolve:
-    Type: "AWS::Lambda::Permission"
-    Properties:
-      Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "DeleteSolve.Arn"
-      Principal: "apigateway.amazonaws.com"
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokePlusTwo:
-    Type: "AWS::Lambda::Permission"
-    Properties:
-      Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "PlusTwo.Arn"
-      Principal: "apigateway.amazonaws.com"
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokeDNF:
-    Type: "AWS::Lambda::Permission"
-    Properties:
-      Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "DNF.Arn"
-      Principal: "apigateway.amazonaws.com"
-      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  GetScrambleGatewayMethod:
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SolveLogSessionApi}/*/*
+  GetSessionsGatewayMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
       HttpMethod: GET
       RequestParameters:
-        method.request.path.cubeType: true
-        method.request.querystring.scrambleLength: false
-      Integration:
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        IntegrationResponses:
-          - ResponseTemplates: { "application/json": "" }
-            ResponseParameters:
-              method.response.header.X-Requested-With: "'*'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-            StatusCode: 200
-        PassthroughBehavior: WHEN_NO_TEMPLATES
-        RequestTemplates:
-          application/json: "{ \"cubeType\": \"$input.params('cubeType')\", \"scrambleLength\": \"$input.params('scrambleLength')\"}"
-        TimeoutInMillis: 29000
-        Type: AWS
-        Uri: !Sub
-          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "GetScramble.Arn"
-      MethodResponses:
-        - ResponseModels:
-            application/json: 'Empty'
-          ResponseParameters:
-            method.response.header.X-Requested-With: false
-            method.response.header.Access-Control-Allow-Headers: false
-            method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: '*'
-          StatusCode: 200
-      OperationName: 'Get Scramble'
-      ResourceId: !Ref GetScrambleResource
-      RestApiId: !Ref CubeScrambleApi
-  GetSolvesGatewayMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      HttpMethod: GET
-      RequestParameters:
-        method.request.querystring.userId: false
+        method.request.querystring.userId: true
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -286,7 +126,7 @@ Resources:
         Type: AWS
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "GetSolves.Arn"
+          - lambdaArn: !GetAtt "GetSessions.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -296,10 +136,10 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: '*'
           StatusCode: 200
-      OperationName: 'Get Solves'
-      ResourceId: !Ref SolvesResource
-      RestApiId: !Ref CubeScrambleApi
-  SaveSolveGatewayMethodV8:
+      OperationName: 'Get Sessions'
+      ResourceId: !Ref SessionsResource
+      RestApiId: !Ref SolveLogSessionApi
+  CreateSessionGatewayMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -324,7 +164,7 @@ Resources:
         Type: AWS
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "SaveSolve.Arn"
+          - lambdaArn: !GetAtt "CreateSession.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -334,17 +174,17 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
           StatusCode: 200
-      OperationName: 'Save solve'
-      ResourceId: !Ref SolvesResource
-      RestApiId: !Ref CubeScrambleApi
-  SolvesResourceOptionsMethod:
+      OperationName: 'Save session'
+      ResourceId: !Ref SessionsResource
+      RestApiId: !Ref SolveLogSessionApi
+  SessionOptionsMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
       RestApiId:
-        Ref: CubeScrambleApi
+        Ref: SolveLogSessionApi
       ResourceId:
-        Ref: SolvesResource
+        Ref: SessionsResource
       HttpMethod: OPTIONS
       Integration:
         IntegrationResponses:
@@ -367,159 +207,7 @@ Resources:
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
-  DeleteSolveGatewayMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      HttpMethod: GET
-      RequestParameters:
-        method.request.path.solveId: true
-        method.request.path.userId: true
-      Integration:
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        IntegrationResponses:
-          - ResponseTemplates: { "application/json": "" }
-            ResponseParameters:
-              method.response.header.X-Requested-With: "'*'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-            StatusCode: 200
-        PassthroughBehavior: WHEN_NO_TEMPLATES
-        RequestTemplates:
-          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\"}"
-        TimeoutInMillis: 29000
-        Type: AWS
-        Uri: !Sub
-          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "DeleteSolve.Arn"
-      MethodResponses:
-        - ResponseModels:
-            application/json: 'Empty'
-          ResponseParameters:
-            method.response.header.X-Requested-With: false
-            method.response.header.Access-Control-Allow-Headers: false
-            method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
-          StatusCode: 200
-      OperationName: 'Delete solve'
-      ResourceId: !Ref DeleteSolveResource
-      RestApiId: !Ref CubeScrambleApi
-  DeleteSolveResourceOptionsMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      RestApiId:
-        Ref: CubeScrambleApi
-      ResourceId:
-        Ref: DeleteSolveResource
-      HttpMethod: OPTIONS
-      Integration:
-        IntegrationResponses:
-          - StatusCode: 200
-            ResponseParameters:
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,POST,OPTIONS'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-            ResponseTemplates:
-              application/json: ''
-        PassthroughBehavior: WHEN_NO_MATCH
-        RequestTemplates:
-          application/json: '{"statusCode": 200}'
-        Type: MOCK
-      MethodResponses:
-        - StatusCode: 200
-          ResponseModels:
-            application/json: 'Empty'
-          ResponseParameters:
-            method.response.header.Access-Control-Allow-Headers: false
-            method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
-  PlusTwoGatewayMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      HttpMethod: GET
-      RequestParameters:
-        method.request.path.solveId: true
-        method.request.path.userId: true
-        method.request.querystring.plusOrMinusTwo: false
-      Integration:
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        IntegrationResponses:
-          - ResponseTemplates: { "application/json": "" }
-            ResponseParameters:
-              method.response.header.X-Requested-With: "'*'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-            StatusCode: 200
-        PassthroughBehavior: WHEN_NO_TEMPLATES
-        RequestTemplates:
-          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"plusOrMinusTwo\": \"$input.params('plusOrMinusTwo')\"}"
-        TimeoutInMillis: 29000
-        Type: AWS
-        Uri: !Sub
-          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "PlusTwo.Arn"
-      MethodResponses:
-        - ResponseModels:
-            application/json: 'Empty'
-          ResponseParameters:
-            method.response.header.X-Requested-With: false
-            method.response.header.Access-Control-Allow-Headers: false
-            method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
-          StatusCode: 200
-      OperationName: 'PlusTwo'
-      ResourceId: !Ref PlusTwoResource
-      RestApiId: !Ref CubeScrambleApi
-  DNFGatewayMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      AuthorizationType: NONE
-      HttpMethod: GET
-      RequestParameters:
-        method.request.path.solveId: true
-        method.request.path.userId: true
-        method.request.querystring.isDnf: false
-      Integration:
-        Credentials: !GetAtt ApiGatewayIamRole.Arn
-        IntegrationHttpMethod: POST
-        IntegrationResponses:
-          - ResponseTemplates: { "application/json": "" }
-            ResponseParameters:
-              method.response.header.X-Requested-With: "'*'"
-              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,x-requested-with'"
-              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
-              method.response.header.Access-Control-Allow-Origin: "'*'"
-            StatusCode: 200
-        PassthroughBehavior: WHEN_NO_TEMPLATES
-        RequestTemplates:
-          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"isDnf\": \"$input.params('isDnf')\"}"
-        TimeoutInMillis: 29000
-        Type: AWS
-        Uri: !Sub
-          - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "DNF.Arn"
-      MethodResponses:
-        - ResponseModels:
-            application/json: 'Empty'
-          ResponseParameters:
-            method.response.header.X-Requested-With: false
-            method.response.header.Access-Control-Allow-Headers: false
-            method.response.header.Access-Control-Allow-Methods: false
-            method.response.header.Access-Control-Allow-Origin: false
-          StatusCode: 200
-      OperationName: 'DNF'
-      ResourceId: !Ref DNFResource
-      RestApiId: !Ref CubeScrambleApi
 Outputs:
   MainEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${CubeScrambleApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/"
-  GetCompletedSubmissionsEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage for Get Scramble Function"
-    Value: !Sub "https://${CubeScrambleApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/cubeType/{cubeType}"
+    Value: !Sub "https://${SolveLogSessionApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStage}/"

@@ -1,7 +1,7 @@
 {
-    "name": "cube-scramble-api",
+    "name": "solve-log-session-api",
     "version": "1.0.0",
-    "description": "Bitter Jester Competitions API.",
+    "description": "Solve Log Sessions API.",
     "main": "index.js",
     "author": "Spencer Kasper",
     "license": "ISC",
