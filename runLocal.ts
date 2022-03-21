@@ -6,7 +6,7 @@
 //     })
 
 
-import {handler} from './src/saveSessionLambdaHandler';
+import {handler} from './src/createSessionLambdaHandler';
 
 handler({
     body: {

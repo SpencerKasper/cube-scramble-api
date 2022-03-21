@@ -13,7 +13,7 @@ Resources:
       FunctionName: GetSessions
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
-      Handler: "getSessionLambdaHandler.handler"
+      Handler: "getSessionsLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
