@@ -8,10 +8,12 @@ export const handler = async (event: any) => {
         }
         const userId = decodeURIComponent(event.userId);
         const dynamoDbClient = new DynamoDbClient('solve_log_solves');
-        const whereClause = userId ? ` WHERE "userId" = '${userId}'` : '';
+        const whereClause = ` WHERE "userId" = '${userId}'`;
         const whereClauseWithSessionId = event.sessionId ? `${whereClause} AND "sessionId" = '${event.sessionId}'` : whereClause;
         const whereClauseWithEmptySessionIds = event.sessionId && event.sessionId === DEFAULT_SESSION_ID ? `${whereClauseWithSessionId} OR "sessionId" IS MISSING` : whereClauseWithSessionId;
-        const result = await dynamoDbClient.queryTable(`SELECT * FROM "solve_log_solves"${whereClauseWithEmptySessionIds}`);
+        const sqlStatement = `SELECT * FROM "solve_log_solves"${whereClauseWithEmptySessionIds}`;
+        const result = await dynamoDbClient.queryTable(sqlStatement);
+        console.error(`GetSolvesLambdaHandler - SQL Statement - ${sqlStatement}`);
         const solves = SolveLogSolvesSchema.fromSchema(result.Items);
         return {responseCode: 200, body: {solves}};
     } catch (e) {
