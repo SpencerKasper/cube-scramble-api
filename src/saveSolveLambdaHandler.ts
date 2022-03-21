@@ -8,7 +8,7 @@ export const handler = async (event: any) => {
         const dynamoDbClient = new DynamoDbClient('solve_log_solves');
         const userIdSolve = {solve};
         await dynamoDbClient.writeMany([SolveLogSolvesSchema.toSchema(userIdSolve)]);
-        return getSolvesLambdaHandler.handler({userId: solve.userId});
+        return getSolvesLambdaHandler.handler({userId: solve.userId, sessionId: solve.sessionId});
     } catch (e) {
         return e;
     }
