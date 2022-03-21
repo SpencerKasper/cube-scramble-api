@@ -14,7 +14,7 @@ export const handler = async (event: any) => {
         const whereClause = ` WHERE "userId" = '${userId}'`;
         const whereClauseWithSessionId = event.sessionId ? `${whereClause} AND ("sessionId" = '${event.sessionId}'` : whereClause;
         const whereClauseWithEmptySessionIds = event.sessionId && event.sessionId === DEFAULT_SESSION_ID ? `${whereClauseWithSessionId} OR "sessionId" IS MISSING)` : `${whereClauseWithSessionId}`;
-        const sqlStatement = event.sessionId && event.sessionId === DEFAULT_SESSION_ID && !whereClauseWithEmptySessionIds.endsWith(')') ? `SELECT * FROM "solve_log_solves"${whereClauseWithEmptySessionIds})` : `SELECT * FROM "solve_log_solves"${whereClauseWithEmptySessionIds}`;
+        const sqlStatement = !whereClauseWithEmptySessionIds.endsWith(')') ? `SELECT * FROM "solve_log_solves"${whereClauseWithEmptySessionIds})` : `SELECT * FROM "solve_log_solves"${whereClauseWithEmptySessionIds}`;
         console.error(`GetSolvesLambdaHandler - SQL Statement - ${sqlStatement}`);
         const result = await dynamoDbClient.queryTable(sqlStatement);
         const solves = SolveLogSolvesSchema.fromSchema(result.Items);

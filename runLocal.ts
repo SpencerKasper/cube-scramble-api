@@ -19,7 +19,7 @@ handler({
     //     sessionId: '45b922ca-1696-4921-a556-9e3a9f738c53'
     // },
     userId: 'spencer.kasper@gmail.com',
-    sessionId: 'DEFAULT_SESSION',
+    sessionId: '45b922ca-1696-4921-a556-9e3a9f738c53',
     solveId: '6d7b18b1-a5e8-4a5b-9b08-0a4c068b28a2',
 })
     .then((response) => {
