@@ -34,12 +34,12 @@ jobs:
             sudo apt-get install zip
             mkdir nodejs
             cp -r node_modules nodejs
-            zip -r ./solve-log-session-api-layer.zip nodejs/
-            aws lambda publish-layer-version --layer-name solve-log-session-api-layer --description "Cube Scramble API node_modules" --zip-file fileb://solve-log-session-api-layer.zip --compatible-runtimes nodejs10.x nodejs12.x nodejs14.x
-            LATEST_LAYER_VERSION=$(aws lambda list-layer-versions --layer-name solve-log-session-api-layer --region us-east-1 --query 'LayerVersions[0].LayerVersionArn')
+            zip -r ./cube-scramble-api-layer.zip nodejs/
+            aws lambda publish-layer-version --layer-name cube-scramble-api-layer --description "Cube Scramble API node_modules" --zip-file fileb://cube-scramble-api-layer.zip --compatible-runtimes nodejs10.x nodejs12.x nodejs14.x
+            LATEST_LAYER_VERSION=$(aws lambda list-layer-versions --layer-name cube-scramble-api-layer --region us-east-1 --query 'LayerVersions[0].LayerVersionArn')
             echo "Latest Layer Version: $LATEST_LAYER_VERSION"
-            sam package --template-file template.yml --output-template-file packaged.yaml --s3-bucket cube-timer-lake --s3-prefix cloudformation-templates/solve-log-session-api --force-upload
-            sam deploy --template-file packaged.yaml --stack-name solve-log-session-api --capabilities CAPABILITY_IAM --parameter-overrides CurrentNodeModulesLayerVersion=${LATEST_LAYER_VERSION}
+            sam package --template-file template.yml --output-template-file packaged.yaml --s3-bucket cube-timer-lake --s3-prefix cloudformation-templates/cube-scramble-api --force-upload
+            sam deploy --template-file packaged.yaml --stack-name cube-scramble-api --capabilities CAPABILITY_IAM --parameter-overrides CurrentNodeModulesLayerVersion=${LATEST_LAYER_VERSION}
 workflows:
   build-and-deploy:
     jobs:
