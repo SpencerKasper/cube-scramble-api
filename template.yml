@@ -7,60 +7,60 @@ Parameters:
     Type: String
     Default: arn:aws:lambda:us-east-1:771384749710:layer:cube-scramble-api-layer:1
 Resources:
-  GetScramble:
+  GetScrambleV2:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: GetScramble
+      FunctionName: GetScrambleV2
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "getScrambleLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
-  GetSolves:
+  GetSolvesV2:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: GetSolves
+      FunctionName: GetSolvesV2
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "getSolvesLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
-  SaveSolve:
+  SaveSolveV2:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: SaveSolve
+      FunctionName: SaveSolveV2
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "saveSolveLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
-  DeleteSolve:
+  DeleteSolveV2:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: DeleteSolve
+      FunctionName: DeleteSolveV2
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "deleteSolveLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
-  PlusTwo:
+  PlusTwoV2:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: PlusTwo
+      FunctionName: PlusTwoV2
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "plusTwoLambdaHandler.handler"
       Runtime: "nodejs12.x"
       Role: !Ref LambdaWithDynamoDBFullAccessRoleArn
       Timeout: 60
-  DNF:
+  DNFV2:
     Type: AWS::Lambda::Function
     Properties:
-      FunctionName: DNF
+      FunctionName: DNFV2
       Code: ./built
       Layers: [ !Ref CurrentNodeModulesLayerVersion ]
       Handler: "dnfLambdaHandler.handler"
@@ -92,28 +92,28 @@ Resources:
         Ref: SolvesResource
       PathPart: '{solveId}'
       RestApiId: !Ref CubeScrambleApi
-  DeleteSolveResource:
+  DeleteSolveV2Resource:
     Type: AWS::ApiGateway::Resource
     Properties:
       ParentId:
         Ref: SolveIdResource
       PathPart: '{userId}'
       RestApiId: !Ref CubeScrambleApi
-  PlusTwoResource:
+  PlusTwoV2Resource:
     Type: AWS::ApiGateway::Resource
     Properties:
       ParentId:
-        Ref: DeleteSolveResource
+        Ref: DeleteSolveV2Resource
       PathPart: 'plusTwo'
       RestApiId: !Ref CubeScrambleApi
-  DNFResource:
+  DNFV2Resource:
     Type: AWS::ApiGateway::Resource
     Properties:
       ParentId:
-        Ref: DeleteSolveResource
+        Ref: DeleteSolveV2Resource
       PathPart: 'dnf'
       RestApiId: !Ref CubeScrambleApi
-  GetScrambleResource:
+  GetScrambleV2Resource:
     Type: AWS::ApiGateway::Resource
     Properties:
       ParentId:
@@ -128,7 +128,7 @@ Resources:
       Schema: { }
   ApiGatewayDeployment:
     Type: AWS::ApiGateway::Deployment
-    DependsOn: GetScrambleGatewayMethod
+    DependsOn: GetScrambleV2GatewayMethod
     Properties:
       Description: Cube Scramble API Deployment
       RestApiId: !Ref CubeScrambleApi
@@ -162,67 +162,67 @@ Resources:
         Statement:
           - Effect: 'Allow'
             Action: 'lambda:*'
-            Resource: !GetAtt GetScramble.Arn
+            Resource: !GetAtt GetScrambleV2.Arn
           - Effect: 'Allow'
             Action: 'lambda:*'
-            Resource: !GetAtt GetSolves.Arn
+            Resource: !GetAtt GetSolvesV2.Arn
           - Effect: 'Allow'
             Action: 'lambda:*'
-            Resource: !GetAtt SaveSolve.Arn
+            Resource: !GetAtt SaveSolveV2.Arn
           - Effect: 'Allow'
             Action: 'lambda:*'
-            Resource: !GetAtt DeleteSolve.Arn
+            Resource: !GetAtt DeleteSolveV2.Arn
           - Effect: 'Allow'
             Action: 'lambda:*'
-            Resource: !GetAtt PlusTwo.Arn
+            Resource: !GetAtt PlusTwoV2.Arn
           - Effect: 'Allow'
             Action: 'lambda:*'
-            Resource: !GetAtt DNF.Arn
+            Resource: !GetAtt DNFV2.Arn
       Roles:
         - !Ref ApiGatewayIamRole
   LambdaApiGatewayInvoke:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "GetScramble.Arn"
+      FunctionName: !GetAtt "GetScrambleV2.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokeGetSolves:
+  LambdaApiGatewayInvokeGetSolvesV2:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "GetSolves.Arn"
+      FunctionName: !GetAtt "GetSolvesV2.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokeSaveSolve:
+  LambdaApiGatewayInvokeSaveSolveV2:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "SaveSolve.Arn"
+      FunctionName: !GetAtt "SaveSolveV2.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokeDeleteSolve:
+  LambdaApiGatewayInvokeDeleteSolveV2:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "DeleteSolve.Arn"
+      FunctionName: !GetAtt "DeleteSolveV2.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokePlusTwo:
+  LambdaApiGatewayInvokePlusTwoV2:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "PlusTwo.Arn"
+      FunctionName: !GetAtt "PlusTwoV2.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  LambdaApiGatewayInvokeDNF:
+  LambdaApiGatewayInvokeDNFV2:
     Type: "AWS::Lambda::Permission"
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt "DNF.Arn"
+      FunctionName: !GetAtt "DNFV2.Arn"
       Principal: "apigateway.amazonaws.com"
       SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${CubeScrambleApi}/*/*
-  GetScrambleGatewayMethod:
+  GetScrambleV2GatewayMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -248,7 +248,7 @@ Resources:
         Type: AWS
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "GetScramble.Arn"
+          - lambdaArn: !GetAtt "GetScrambleV2.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -259,9 +259,9 @@ Resources:
             method.response.header.Access-Control-Allow-Origin: '*'
           StatusCode: 200
       OperationName: 'Get Scramble'
-      ResourceId: !Ref GetScrambleResource
+      ResourceId: !Ref GetScrambleV2Resource
       RestApiId: !Ref CubeScrambleApi
-  GetSolvesGatewayMethod:
+  GetSolvesV2GatewayMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -287,7 +287,7 @@ Resources:
         Type: AWS
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "GetSolves.Arn"
+          - lambdaArn: !GetAtt "GetSolvesV2.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -300,7 +300,7 @@ Resources:
       OperationName: 'Get Solves'
       ResourceId: !Ref SolvesResource
       RestApiId: !Ref CubeScrambleApi
-  SaveSolveGatewayMethodV8:
+  SaveSolveV2GatewayMethodV8:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -325,7 +325,7 @@ Resources:
         Type: AWS
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "SaveSolve.Arn"
+          - lambdaArn: !GetAtt "SaveSolveV2.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -368,7 +368,7 @@ Resources:
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
-  DeleteSolveGatewayMethod:
+  DeleteSolveV2GatewayMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -394,7 +394,7 @@ Resources:
         Type: AWS
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "DeleteSolve.Arn"
+          - lambdaArn: !GetAtt "DeleteSolveV2.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -405,16 +405,16 @@ Resources:
             method.response.header.Access-Control-Allow-Origin: false
           StatusCode: 200
       OperationName: 'Delete solve'
-      ResourceId: !Ref DeleteSolveResource
+      ResourceId: !Ref DeleteSolveV2Resource
       RestApiId: !Ref CubeScrambleApi
-  DeleteSolveResourceOptionsMethod:
+  DeleteSolveV2ResourceOptionsMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
       RestApiId:
         Ref: CubeScrambleApi
       ResourceId:
-        Ref: DeleteSolveResource
+        Ref: DeleteSolveV2Resource
       HttpMethod: OPTIONS
       Integration:
         IntegrationResponses:
@@ -437,7 +437,7 @@ Resources:
             method.response.header.Access-Control-Allow-Headers: false
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
-  PlusTwoGatewayMethod:
+  PlusTwoV2GatewayMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -464,7 +464,7 @@ Resources:
         Type: AWS
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "PlusTwo.Arn"
+          - lambdaArn: !GetAtt "PlusTwoV2.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -474,10 +474,10 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
           StatusCode: 200
-      OperationName: 'PlusTwo'
-      ResourceId: !Ref PlusTwoResource
+      OperationName: 'PlusTwoV2'
+      ResourceId: !Ref PlusTwoV2Resource
       RestApiId: !Ref CubeScrambleApi
-  DNFGatewayMethod:
+  DNFV2GatewayMethod:
     Type: AWS::ApiGateway::Method
     Properties:
       AuthorizationType: NONE
@@ -504,7 +504,7 @@ Resources:
         Type: AWS
         Uri: !Sub
           - 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${lambdaArn}/invocations'
-          - lambdaArn: !GetAtt "DNF.Arn"
+          - lambdaArn: !GetAtt "DNFV2.Arn"
       MethodResponses:
         - ResponseModels:
             application/json: 'Empty'
@@ -514,8 +514,8 @@ Resources:
             method.response.header.Access-Control-Allow-Methods: false
             method.response.header.Access-Control-Allow-Origin: false
           StatusCode: 200
-      OperationName: 'DNF'
-      ResourceId: !Ref DNFResource
+      OperationName: 'DNFV2'
+      ResourceId: !Ref DNFV2Resource
       RestApiId: !Ref CubeScrambleApi
 Outputs:
   MainEndpoint:
