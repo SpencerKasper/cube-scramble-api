@@ -8,7 +8,7 @@ export const handler = async (event) => {
           return {responseCode: 400, body: {solves: []}};
       }
       const userId = decodeURIComponent(event.userId);
-      const plusOrMinusTwo = event.plusOrMinusTwo ? event.plusOrMinusTwo : '+'
+      const plusOrMinusTwo = event.plusOrMinusTwo ? event.plusOrMinusTwo : '+';
       const dynamoDbClient = new DynamoDbClient('solve_log_solves');
       const params = {
           TransactItems: [

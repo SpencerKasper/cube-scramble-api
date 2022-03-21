@@ -1,5 +1,6 @@
 import {DynamoDbClient} from "./dynamo_db/dynamoDbClient";
 import {SolveLogSolvesSchema} from "./dynamo_db/schemas/solveLogSolvesSchema";
+import * as getSolvesLambdaHandler from './getSolvesLambdaHandler';
 
 export const handler = async (event: any) => {
     try {
@@ -11,10 +12,7 @@ export const handler = async (event: any) => {
         const dynamoDbClient = new DynamoDbClient('solve_log_solves');
         const deleteStatement = `DELETE FROM "solve_log_solves" WHERE "userId" = '${userId}' AND "solveId" = '${solveId}'`;
         await dynamoDbClient.queryTable(deleteStatement);
-        const selectStatement = `SELECT * FROM "solve_log_solves" WHERE "userId" = '${userId}'`;
-        const result = await dynamoDbClient.queryTable(selectStatement);
-        const solves = SolveLogSolvesSchema.fromSchema(result.Items);
-        return {responseCode: 200, body: {solves}};
+        return getSolvesLambdaHandler.handler(event);
     } catch (e) {
         return e;
     }
