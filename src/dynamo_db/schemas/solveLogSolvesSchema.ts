@@ -2,7 +2,7 @@ import {v4 as uuidv4} from 'uuid';
 interface Solve { sessionId?: string; userId: string; scramble: string; time: number; solveId: string; cubeType: string; number: number; plusTwo: boolean; dnf: boolean;}
 interface SolveResponseSchema { solve: Solve; }
 
-const DEFAULT_SESSION_ID = 'DEFAULT_SESSION';
+export const DEFAULT_SESSION_ID = 'DEFAULT_SESSION';
 
 export class SolveLogSolvesSchema {
     static toSchema({
