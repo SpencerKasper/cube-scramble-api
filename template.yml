@@ -376,6 +376,7 @@ Resources:
       RequestParameters:
         method.request.path.solveId: true
         method.request.path.userId: true
+        method.request.querystring.sessionId: false
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -389,7 +390,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\"}"
+          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"sessionId\": \"$input.params('sessionId')\"}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
@@ -446,6 +447,7 @@ Resources:
         method.request.path.solveId: true
         method.request.path.userId: true
         method.request.querystring.plusOrMinusTwo: false
+        method.request.querystring.sessionId: false
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -459,7 +461,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"plusOrMinusTwo\": \"$input.params('plusOrMinusTwo')\"}"
+          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"plusOrMinusTwo\": \"$input.params('plusOrMinusTwo')\", \"sessionId\": \"$input.params('sessionId')\"}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
@@ -486,6 +488,7 @@ Resources:
         method.request.path.solveId: true
         method.request.path.userId: true
         method.request.querystring.isDnf: false
+        method.request.querystring.sessionId: false
       Integration:
         Credentials: !GetAtt ApiGatewayIamRole.Arn
         IntegrationHttpMethod: POST
@@ -499,7 +502,7 @@ Resources:
             StatusCode: 200
         PassthroughBehavior: WHEN_NO_TEMPLATES
         RequestTemplates:
-          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"isDnf\": \"$input.params('isDnf')\"}"
+          application/json: "{\"userId\": \"$input.params('userId')\", \"solveId\": \"$input.params('solveId')\", \"isDnf\": \"$input.params('isDnf')\", \"sessionId\": \"$input.params('sessionId')\"}"
         TimeoutInMillis: 29000
         Type: AWS
         Uri: !Sub
