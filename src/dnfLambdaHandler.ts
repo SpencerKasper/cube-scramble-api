@@ -1,4 +1,3 @@
-import {DynamoDB} from "@aws-sdk/client-dynamodb";
 import {DynamoDbClient} from "./dynamo_db/dynamoDbClient";
 import * as getSolvesLambdaHandler from './getSolvesLambdaHandler';
 
@@ -6,7 +5,6 @@ export const handler = async (event) => {
   try {
       const userId = decodeURIComponent(event.userId);
       const isDnf = event.isDnf === 'false' ? false : true;
-      console.error(isDnf);
       const dynamoDbClient = new DynamoDbClient('solve_log_solves');
       const params = {
           TransactItems: [

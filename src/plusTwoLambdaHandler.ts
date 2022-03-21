@@ -4,6 +4,9 @@ import * as getSolvesLambdaHandler from './getSolvesLambdaHandler';
 
 export const handler = async (event) => {
   try {
+      if(!event.userId) {
+          return {responseCode: 400, body: {solves: []}};
+      }
       const userId = decodeURIComponent(event.userId);
       const plusOrMinusTwo = event.plusOrMinusTwo ? event.plusOrMinusTwo : '+'
       const dynamoDbClient = new DynamoDbClient('solve_log_solves');

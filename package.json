@@ -1,7 +1,7 @@
 {
     "name": "cube-scramble-api",
     "version": "1.0.0",
-    "description": "Bitter Jester Competitions API.",
+    "description": "Cube Scramble API.",
     "main": "index.js",
     "author": "Spencer Kasper",
     "license": "ISC",
