@@ -48,7 +48,7 @@ export class DynamoDbClient {
     }
 
     async writeMany(schemaObjects: any[]) {
-        const putRequests = schemaObjects.map(schemaObject => ({PutRequest: {Item: schemaObject}}));
+        const putRequests = schemaObjects.map(schemaObject => ({PutRequest: {Item: {...schemaObject, creationTimestamp: {N: Date.now().toString()}}}}));
         const params = {
             ReturnConsumedCapacity: 'TOTAL',
             RequestItems: {
