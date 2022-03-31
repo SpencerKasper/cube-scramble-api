@@ -1,5 +1,5 @@
 import {v4 as uuidv4} from 'uuid';
-interface Solve { sessionId?: string; userId: string; scramble: string; time: number; solveId: string; cubeType: string; number: number; plusTwo: boolean; dnf: boolean;}
+interface Solve { sessionId?: string; userId: string; scramble: string; time: number; solveId: string; cubeType: string; number: number; plusTwo: boolean; dnf: boolean; creationTimestamp?: number;}
 interface SolveResponseSchema { solve: Solve; }
 
 export const DEFAULT_SESSION_ID = 'DEFAULT_SESSION';
@@ -18,6 +18,7 @@ export class SolveLogSolvesSchema {
             number: {N: solve.number.toString()},
             plusTwo: {BOOL: solve.plusTwo ? solve.plusTwo : false},
             dnf: {BOOL: solve.dnf ? solve.dnf : false},
+            creationTimestamp: {N: solve.creationTimestamp ? solve.creationTimestamp : Date.now().toString()}
         };
     }
 
@@ -32,6 +33,7 @@ export class SolveLogSolvesSchema {
             number: Number(response.number.N),
             plusTwo: response.plusTwo ? response.plusTwo.BOOL : false,
             dnf: response.dnf ? response.dnf.BOOL : false,
+            creationTimestamp: Number(response.creationTimestamp.N),
         }));
     }
 }
